@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streaming YT - Tienda Oficial de Servicios Streaming</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            red: '#E50914',
+                            dark: '#0f172a',
+                            card: '#1e293b',
+                            accent: '#6366f1'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <nav class="sticky top-0 z-50 glass-panel border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="showTab('catalog')">
+                    <div class="bg-red-600 text-white p-2 rounded-lg font-black text-xl">SYT</div>
+                    <span class="font-extrabold text-xl tracking-wider text-white">STREAMING <span class="text-red-500">YT</span></span>
+                </div>
+                
+                <div class="hidden md:flex space-x-6">
+                    <button onclick="showTab('catalog')" class="hover:text-red-500 font-medium transition"><i class="fa-solid fa-store mr-2"></i>Catálogo</button>
+                    <button onclick="showTab('guarantee')" class="hover:text-red-500 font-medium transition"><i class="fa-solid fa-shield-halved mr-2"></i>Garantías / ID</button>
+                    <button onclick="showTab('referrals')" class="hover:text-red-500 font-medium transition"><i class="fa-solid fa-users-viewfinder mr-2"></i>Referidos</button>
+                    <button onclick="showTab('history')" class="hover:text-red-500 font-medium transition"><i class="fa-solid fa-clock-history mr-2"></i>Mis Compras</button>
+                    <button onclick="showTab('admin')" class="hover:text-amber-400 font-medium transition text-amber-400"><i class="fa-solid fa-user-shield mr-2"></i>Admin</button>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <!-- Balance Usuario -->
+                    <div class="bg-gray-800 border border-gray-700 px-3 py-1 rounded-full text-xs font-semibold text-green-400 flex items-center gap-1">
+                        <i class="fa-solid fa-wallet"></i> $<span id="userBalanceDisplay">0.00</span>
+                    </div>
+
+                    <!-- Carrito Button -->
+                    <button onclick="toggleCartModal()" class="relative p-2 text-gray-300 hover:text-white">
+                        <i class="fa-solid fa-cart-shopping text-xl"></i>
+                        <span id="cartCount" class="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navegación Móvil -->
+        <div class="md:hidden flex justify-around bg-slate-900 py-2 border-t border-gray-800 text-xs">
+            <button onclick="showTab('catalog')" class="flex flex-col items-center py-1 text-gray-300"><i class="fa-solid fa-store text-base mb-1"></i>Catálogo</button>
+            <button onclick="showTab('guarantee')" class="flex flex-col items-center py-1 text-gray-300"><i class="fa-solid fa-shield-halved text-base mb-1"></i>Garantía</button>
+            <button onclick="showTab('history')" class="flex flex-col items-center py-1 text-gray-300"><i class="fa-solid fa-receipt text-base mb-1"></i>Compras</button>
+            <button onclick="showTab('admin')" class="flex flex-col items-center py-1 text-amber-400"><i class="fa-solid fa-user-shield text-base mb-1"></i>Admin</button>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- ALERTA / NOTIFICACIONES -->
+        <div id="toastNotification" class="hidden fixed bottom-5 right-5 z-50 bg-green-600 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+            <i class="fa-solid fa-circle-check text-2xl"></i>
+            <span id="toastMessage">Operación realizada con éxito</span>
+        </div>
+
+        <!-- SECCIÓN 1: CATÁLOGO DE PRODUCTOS -->
+        <section id="tab-catalog" class="tab-content">
+            <div class="mb-8 text-center sm:text-left">
+                <h1 class="text-3xl font-extrabold text-white mb-2">Plataformas de Streaming Disponibles</h1>
+                <p class="text-gray-400 text-sm">Cuentas completas, perfiles privados y renovaciones entrega inmediata 24/7.</p>
+            </div>
+
+            <!-- Grid de Cuentas -->
+            <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Se genera con JavaScript -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN 2: CONSULTA DE GARANTÍA POR ID -->
+        <section id="tab-guarantee" class="tab-content hidden">
+            <div class="max-w-2xl mx-auto glass-panel p-6 rounded-2xl border border-gray-800">
+                <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-red-500"></i> Sistema de Consulta de Garantía e ID
+                </h2>
+                <p class="text-gray-400 text-sm mb-6">Ingresa el ID de compra generado al momento del pago para consultar los datos de tu cuenta, fecha de vencimiento y solicitar soporte inmediato.</p>
+                
+                <div class="flex gap-3 mb-6">
+                    <input type="text" id="guaranteeIdInput" placeholder="Ej: SYT-8942-X" class="flex-grow bg-slate-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-red-500">
+                    <button onclick="searchGuarantee()" class="bg-red-600 hover:bg-red-700 font-bold px-6 py-3 rounded-xl transition flex items-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                    </button>
+                </div>
+
+                <div id="guaranteeResult" class="hidden border-t border-gray-800 pt-4 mt-4">
+                    <!-- Resultado inyectado dinámicamente -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 3: PROGRAMA DE REFERIDOS -->
+        <section id="tab-referrals" class="tab-content hidden">
+            <div class="max-w-2xl mx-auto glass-panel p-6 rounded-2xl border border-gray-800 text-center">
+                <div class="w-16 h-16 bg-red-600/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                    <i class="fa-solid fa-gift"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2">Gana Saldo Compartiendo tu Enlace</h2>
+                <p class="text-gray-400 text-sm mb-6">Recibe un 5% de comisión de saldo acumulable por cada compra realizada con tu código único.</p>
+
+                <div class="bg-slate-900 border border-gray-800 p-4 rounded-xl flex items-center justify-between mb-6">
+                    <span id="referralCodeText" class="font-mono text-red-400 font-bold text-lg">https://streamingyt.com/?ref=USER9823</span>
+                    <button onclick="copyReferralLink()" class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                        <i class="fa-solid fa-copy mr-1"></i> Copiar
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-900/60 p-4 rounded-xl border border-gray-800">
+                        <span class="block text-gray-400 text-xs uppercase font-bold">Referidos Registrados</span>
+                        <span class="text-2xl font-black text-white">12</span>
+                    </div>
+                    <div class="bg-slate-900/60 p-4 rounded-xl border border-gray-800">
+                        <span class="block text-gray-400 text-xs uppercase font-bold">Comisiones Ganadas</span>
+                        <span class="text-2xl font-black text-green-400">$18,500 COP</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN 4: HISTORIAL DE COMPRAS -->
+        <section id="tab-history" class="tab-content hidden">
+            <h2 class="text-2xl font-bold text-white mb-6">Mis Compras Realizadas</h2>
+            <div id="historyList" class="space-y-4">
+                <!-- Generado dinámicamente -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN 5: PANEL DE ADMINISTRACIÓN -->
+        <section id="tab-admin" class="tab-content hidden">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield"></i> Panel de Administración de Cuentas y Ventas
+                </h2>
+                <button onclick="openAddProductModal()" class="bg-amber-500 hover:bg-amber-600 text-black font-bold px-4 py-2 rounded-xl text-sm transition">
+                    <i class="fa-solid fa-plus mr-1"></i> Agregar Producto
+                </button>
+            </div>
+
+            <!-- Tablas de gestión -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Stock Disponible -->
+                <div class="glass-panel p-5 rounded-2xl border border-gray-800">
+                    <h3 class="font-bold text-white mb-4 border-b border-gray-800 pb-2">Inventario y Cuentas Activas</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-gray-300">
+                            <thead class="bg-slate-900 text-gray-400 uppercase">
+                                <tr>
+                                    <th class="p-2">Servicio</th>
+                                    <th class="p-2">Precio</th>
+                                    <th class="p-2">Stock</th>
+                                    <th class="p-2">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminInventoryTable">
+                                <!-- Filas de Inventario -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Historial Global de Ventas -->
+                <div class="glass-panel p-5 rounded-2xl border border-gray-800">
+                    <h3 class="font-bold text-white mb-4 border-b border-gray-800 pb-2">Últimas Cuentas Entregadas</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-gray-300">
+                            <thead class="bg-slate-900 text-gray-400 uppercase">
+                                <tr>
+                                    <th class="p-2">ID Compra</th>
+                                    <th class="p-2">Producto</th>
+                                    <th class="p-2">Credenciales</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminSalesTable">
+                                <!-- Filas de ventas -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL DE CARRITO / CHECKOUT -->
+    <div id="cartModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-lg rounded-2xl border border-gray-800 p-6 flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center pb-4 border-b border-gray-800">
+                <h3 class="text-xl font-bold text-white"><i class="fa-solid fa-cart-shopping text-red-500 mr-2"></i>Tu Carrito de Compras</h3>
+                <button onclick="toggleCartModal()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+
+            <div id="cartItemsList" class="flex-grow overflow-y-auto py-4 space-y-3">
+                <!-- Lista de items del carrito -->
+            </div>
+
+            <div class="border-t border-gray-800 pt-4 space-y-3">
+                <div class="flex justify-between font-bold text-lg text-white">
+                    <span>Total a Pagar:</span>
+                    <span id="cartTotalDisplay" class="text-green-400">$0 COP</span>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-gray-400">Selecciona Método de Pago:</label>
+                    <select id="paymentMethod" class="w-full bg-slate-900 border border-gray-700 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-red-500">
+                        <option value="balance">Saldo en Cuenta (Disponible: $<span id="modalBalanceText">0</span>)</option>
+                        <option value="nequi">Nequi / Daviplata / Bancolombia (Automatizado)</option>
+                    </select>
+                </div>
+
+                <button onclick="processCheckout()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-bolt"></i> Finalizar Compra y Recibir Cuentas
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="border-t border-gray-800 bg-slate-950 py-6 text-center text-xs text-gray-500">
+        <p>© 2026 Streaming YT. Todos los derechos reservados. Entrega automatizada y soporte garantizado.</p>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT PRINCIPAL -->
+    <script>
+        // --- BASE DE DATOS INICIAL ---
+        let products = [
+            { id: 1, name: 'Netflix Premium 4K', type: 'Perfil Privado + PIN', price: 12000, stock: 15, icon: 'fa-tv', color: 'from-red-600 to-red-900' },
+            { id: 2, name: 'YouTube Premium', type: 'Cuenta Completa 1 Mes', price: 8000, stock: 22, icon: 'fa-youtube', color: 'from-red-500 to-rose-700' },
+            { id: 3, name: 'Disney+ Standard', type: 'Perfil Privado', price: 9500, stock: 8, icon: 'fa-film', color: 'from-blue-600 to-indigo-900' },
+            { id: 4, name: 'Max (HBO) Standard', type: 'Cuenta Completa', price: 11000, stock: 10, icon: 'fa-clapperboard', color: 'from-purple-600 to-indigo-950' },
+            { id: 5, name: 'Prime Video 1 Mes', type: 'Perfil Privado', price: 7500, stock: 18, icon: 'fa-video', color: 'from-cyan-600 to-blue-800' },
+            { id: 6, name: 'Spotify Premium 3 Meses', type: 'Renovación / Cuenta', price: 15000, stock: 5, icon: 'fa-spotify', color: 'from-green-600 to-emerald-900' }
+        ];
+
+        let cart = [];
+        let userBalance = 50000; // Saldo inicial simulado
+        let salesHistory = [
+            { id: 'SYT-4819-A', product: 'Netflix Premium 4K', email: 'user12@net.com', pass: 'Ntf2026#', pin: '4921', date: '2026-09-28', status: 'Activa' }
+        ];
+
+        // --- INICIALIZACIÓN ---
+        window.onload = function() {
+            renderProducts();
+            updateBalanceUI();
+            renderAdminTables();
+            renderHistory();
+        };
+
+        // --- NAVEGACIÓN TAB ---
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+        }
+
+        // --- RENDERIZAR PRODUCTOS ---
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            products.forEach(p => {
+                grid.innerHTML += `
+                    <div class="glass-panel rounded-2xl overflow-hidden border border-gray-800 flex flex-col justify-between hover:border-red-500/50 transition">
+                        <div class="bg-gradient-to-br ${p.color} p-6 text-center text-white relative">
+                            <i class="fa-solid ${p.icon} text-5xl mb-2 opacity-90"></i>
+                            <span class="absolute top-3 right-3 text-xs bg-black/40 px-2.5 py-1 rounded-full font-bold">Stock: ${p.stock}</span>
+                        </div>
+                        <div class="p-5 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-extrabold text-lg text-white mb-1">${p.name}</h3>
+                                <p class="text-gray-400 text-xs mb-4">${p.type}</p>
+                            </div>
+                            <div>
+                                <div class="text-xl font-black text-green-400 mb-4">$${p.price.toLocaleString('es-CO')} COP</div>
+                                <button onclick="addToCart(${p.id})" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-sm transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-cart-plus"></i> Añadir al Carrito
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- CARRITO DE COMPRAS ---
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (product && product.stock > 0) {
+                cart.push(product);
+                updateCartUI();
+                showToast(`Agregado: ${product.name}`);
+            } else {
+                showToast('Producto sin stock disponible', 'error');
+            }
+        }
+
+        function updateCartUI() {
+            document.getElementById('cartCount').innerText = cart.length;
+            const cartItemsList = document.getElementById('cartItemsList');
+            cartItemsList.innerHTML = '';
+
+            let total = 0;
+            cart.forEach((item, index) => {
+                total += item.price;
+                cartItemsList.innerHTML += `
+                    <div class="flex items-center justify-between bg-slate-900/80 p-3 rounded-xl border border-gray-800">
+                        <div>
+                            <h4 class="text-white text-sm font-bold">${item.name}</h4>
+                            <span class="text-xs text-green-400 font-semibold">$${item.price.toLocaleString('es-CO')} COP</span>
+                        </div>
+                        <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-300 text-sm">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+            });
+
+            document.getElementById('cartTotalDisplay').innerText = `$${total.toLocaleString('es-CO')} COP`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            up
